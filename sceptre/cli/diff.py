@@ -4,13 +4,13 @@ from sceptre.context import SceptreContext
 from sceptre.cli.helpers import catch_exceptions, write
 from sceptre.config.reader import ConfigReader
 
-@click.command(name="diff", short_help="Show diffs.")
+@click.command(name="diff", short_help="Show diffs with running stack.")
 @click.argument("path")
 @click.pass_context
 @catch_exceptions
 def diff_command(ctx, path):
     """
-    Emit the stack name.
+    Show diffs between the running and generated stack.
 
     :param path: The path to launch. Can be a Stack or StackGroup.
     :type path: str
@@ -26,12 +26,12 @@ def diff_command(ctx, path):
     stacks, _ = ConfigReader(context).construct_stacks()
 
     for stack in list(stacks):
-        diffs = stack.diff()
-        if diffs:
+        diff = stack.diff()
+        if diff:
             message = "\
 Differences between running stack {} and \
 generated template:\n\
-{}".format(stack.external_name, diffs)
+{}".format(stack.external_name, diff)
         else:
             message = "No diffs"
 
