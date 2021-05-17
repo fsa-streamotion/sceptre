@@ -623,7 +623,7 @@ class StackActions(object):
         else:
             response = "No diffs"
 
-        return [self.stack.external_name, response]
+        return response
 
     @add_stack_hooks
     def validate(self):

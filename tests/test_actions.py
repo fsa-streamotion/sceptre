@@ -1021,7 +1021,7 @@ class TestStackActions(object):
         self.template._body = '---\nfoo: bar'
 
         response = self.actions.diff()
-        assert response == [sentinel.external_name, "No diffs"]
+        assert response == "No diffs"
 
     @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
     def test_diff_some_diffs(
@@ -1032,10 +1032,7 @@ class TestStackActions(object):
 
         response = self.actions.diff()
 
-        assert response == [
-            sentinel.external_name,
-            "Item root['baz'] added to dictionary."
-        ]
+        assert response == "Item root['baz'] added to dictionary."
 
     @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
     def test_diff_stack_does_not_exist(
