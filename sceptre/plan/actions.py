@@ -677,14 +677,21 @@ class StackActions(object):
         )
         return response
 
-    def stack_name(self):
+    def stack_name(self, p_opt):
         """
         Returns the Stack's stack name.
 
+        :param p_opt: The -P option.
+        :type p_opt: bool
         :returns: The Stack's stack name (external_name).
         :rtype: str
         """
-        return self.stack.external_name
+        return_val = self.stack.external_name
+
+        if p_opt:
+            return_val = self.name + ": " + return_val
+
+        return return_val
 
     def get_status(self):
         """

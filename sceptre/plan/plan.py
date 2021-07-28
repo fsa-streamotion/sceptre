@@ -364,6 +364,7 @@ class SceptrePlan(object):
         :returns: A dictionary of Stack Names.
         :rtype: dict
         """
+        import ipdb; ipdb.set_trace() # self.context.command_path
         self.resolve(command=self.stack_name.__name__)
         return self._execute(*args)
 
