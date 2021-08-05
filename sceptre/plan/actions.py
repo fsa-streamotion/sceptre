@@ -614,18 +614,116 @@ class StackActions(object):
         local_template_stream = self.stack.template.body
 
         if differ == "difflib":
-            return_val = self._diff_by_difflib(
+            response = self._diff_by_difflib(
                 remote_template_stream,
                 local_template_stream
             )
 
         elif differ == "dictdiffer":
-            return_val = self._diff_by_dictdiffer(
+            response = self._diff_by_dictdiffer(
                 remote_template_stream,
                 local_template_stream
             )
 
-        return [self.stack.external_name, return_val]
+        return [self.stack.external_name, response]
+
+    @add_stack_hooks
+    def detect_stack_drift(self):
+        """
+        Detects stack drift for a running stack.
+
+        :returns: The stack drift.
+        :rtype: List[str]
+        """
+        response = self._detect_stack_drift()
+
+        detection_id = response["StackDriftDetectionId"]
+        status = self._wait_for_drift(detection_id)
+
+        if status == "DETECTION_COMPLETE":
+            response = self._describe_stack_resource_drifts()
+            return_value = [self.stack.external_name, response]
+        else:
+            return_value = [self.stack.external_name, status]
+
+        return return_value
+
+    def _wait_for_drift(self, detect_id):
+        """
+        Waits for drift detection to complete.
+
+        :param detect_id: The drift detection ID.
+        :type detect_id: str
+
+        :returns: The drift status.
+        :rtype: str
+        """
+        timeout = 300
+        elapsed = 0
+
+        def print_status():
+            status_reason = response["DetectionStatusReason"]
+            self.logger.info("%s - StackDriftDetectionId - %s", self.stack.name, detect_id)
+            self.logger.info("%s - DetectionStatus - %s", self.stack.name, status)
+            self.logger.info("%s - DetectionStatusReason - %s", self.stack.name, status_reason)
+
+        while True:
+            if elapsed >= timeout:
+                return "TIMED_OUT"
+
+            self.logger.debug("%s - Waiting for drift detection", self.stack.name)
+            response = self._describe_stack_drift_detection_status(detect_id)
+
+            status = response["DetectionStatus"]
+
+            if status == "DETECTION_IN_PROGRESS":
+                print_status()
+                time.sleep(10)
+                elapsed += 10
+            else:
+                return status
+
+    def _detect_stack_drift(self):
+        """
+        Run detect_stack_drift.
+        """
+        self.logger.debug("%s - Detecting Stack Drift", self.stack.name)
+
+        return self.connection_manager.call(
+            service="cloudformation",
+            command="detect_stack_drift",
+            kwargs={
+                "StackName": self.stack.external_name
+            }
+        )
+
+    def _describe_stack_drift_detection_status(self, detect_id):
+        """
+        Run describe_stack_drift_detection_status.
+        """
+        self.logger.debug("%s - Detecting Stack Drift Detection Status", self.stack.name)
+
+        return self.connection_manager.call(
+            service="cloudformation",
+            command="describe_stack_drift_detection_status",
+            kwargs={
+                "StackDriftDetectionId": detect_id
+            }
+        )
+
+    def _describe_stack_resource_drifts(self):
+        """
+        Detects stack resource_drifts for a running stack.
+        """
+        self.logger.debug("%s - Detecting Stack Drift", self.stack.name)
+
+        return self.connection_manager.call(
+            service="cloudformation",
+            command="describe_stack_resource_drifts",
+            kwargs={
+                "StackName": self.stack.external_name
+            }
+        )
 
     @add_stack_hooks
     def validate(self):
