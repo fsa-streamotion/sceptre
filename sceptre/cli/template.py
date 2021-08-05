@@ -99,12 +99,12 @@ def fetch_remote_template_command(ctx, path):
 @click.command(name="stack-name", short_help="Reveal the stack name or names.")
 @click.argument("path")
 @click.option(
-    "-P", "--p_opt", is_flag=True, default=False,
+    "-P", "--print-name", is_flag=True, default=False,
     help="Also print sceptre's name for this stack.",
 )
 @click.pass_context
 @catch_exceptions
-def stack_name_command(ctx, path, p_opt):
+def stack_name_command(ctx, path, print_name):
     """
     Show the stack names of all stacks.
     \f
@@ -121,11 +121,11 @@ def stack_name_command(ctx, path, p_opt):
     )
 
     plan = SceptrePlan(context)
-    responses = plan.stack_name(p_opt)
+    responses = plan.stack_name(print_name)
 
     for stack_name in responses.values():
         write(stack_name, context.output_format)
-        
+
 
 @click.command(name="diff", short_help="Show diffs with running stack.")
 @click.argument("path")
