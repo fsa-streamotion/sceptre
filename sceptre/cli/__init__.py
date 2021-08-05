@@ -49,9 +49,6 @@ from sceptre.cli.helpers import setup_logging, catch_exceptions
 @click.option(
     "--ignore-dependencies", is_flag=True, help="Ignore dependencies when executing command.")
 @click.option(
-    "--j2_extension", "j2_extensions",  multiple=True,
-    help="Import path of Jinja2 extension to load.")
-@click.option(
     "--merge-keys", is_flag=True, default=False,
     help="Deep merge keys in successive var dicts.")
 @click.pass_context
@@ -65,7 +62,6 @@ def cli(
         var,
         var_file,
         ignore_dependencies,
-        j2_extensions,
         merge_keys
 ):
     """
@@ -101,8 +97,7 @@ def cli(
         "output_format": output,
         "no_colour": no_colour,
         "ignore_dependencies": ignore_dependencies,
-        "project_path": directory if directory else os.getcwd(),
-        "j2_extensions": j2_extensions
+        "project_path": directory if directory else os.getcwd()
     }
     if var_file:
         for fh in var_file:
