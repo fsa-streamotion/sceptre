@@ -662,10 +662,21 @@ class StackActions(object):
         elapsed = 0
 
         def print_status():
-            status_reason = response["DetectionStatusReason"]
-            self.logger.info("%s - StackDriftDetectionId - %s", self.stack.name, detect_id)
-            self.logger.info("%s - DetectionStatus - %s", self.stack.name, status)
-            self.logger.info("%s - DetectionStatusReason - %s", self.stack.name, status_reason)
+            keys = [
+                "StackDriftDetectionId",
+                "DetectionStatus",
+                "DetectionStatusReason",
+                "StackDriftStatus"
+            ]
+
+            for key in keys:
+                if key in response:
+                    status = response[key]
+                    self.logger.debug(
+                        "%s - %s - %s",
+                        self.stack.name,
+                        key, status
+                    )
 
         while True:
             if elapsed >= timeout:
@@ -675,9 +686,9 @@ class StackActions(object):
             response = self._describe_stack_drift_detection_status(detect_id)
 
             status = response["DetectionStatus"]
+            print_status()
 
             if status == "DETECTION_IN_PROGRESS":
-                print_status()
                 time.sleep(10)
                 elapsed += 10
             else:
