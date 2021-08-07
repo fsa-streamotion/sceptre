@@ -897,5 +897,4 @@ class TestCli(object):
             cli, ["detect-stack-drift", "dev/vpc.yaml"]
         )
         assert result.exit_code == 0
-        assert result.output == '{\n  "mock-stack": {\n    "some": "json"\n  }\n}\n'                                                        
-
+        assert result.output == '{\n  "mock-stack": {\n    "some": "json"\n  }\n}\n'

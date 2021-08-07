@@ -633,7 +633,7 @@ class StackActions(object):
         Detects stack drift for a running stack.
 
         :returns: The stack drift.
-        :rtype: List[str]
+        :rtype: Tuple[str, Union[str, dict]]
         """
         response = self._detect_stack_drift()
 
@@ -642,9 +642,9 @@ class StackActions(object):
 
         if status == "DETECTION_COMPLETE":
             response = self._describe_stack_resource_drifts()
-            return_value = [self.stack.external_name, response]
+            return_value = (self.stack.external_name, response)
         else:
-            return_value = [self.stack.external_name, status]
+            return_value = (self.stack.external_name, status)
 
         return return_value
 
@@ -669,7 +669,7 @@ class StackActions(object):
             response = self._describe_stack_drift_detection_status(detect_id)
 
             status = response["DetectionStatus"]
-            self._print_status(response)
+            self._print_drift_status(response)
 
             if status == "DETECTION_IN_PROGRESS":
                 time.sleep(10)
@@ -677,7 +677,11 @@ class StackActions(object):
             else:
                 return status
 
-    def _print_status(self, response):
+    def _print_drift_status(self, response):
+        """
+        Print the drift status while waiting for
+        drift detection to complete.
+        """
         keys = [
             "StackDriftDetectionId",
             "DetectionStatus",
@@ -687,11 +691,10 @@ class StackActions(object):
 
         for key in keys:
             if key in response:
-                status = response[key]
                 self.logger.debug(
                     "%s - %s - %s",
                     self.stack.name,
-                    key, status
+                    key, response[key]
                 )
 
     def _detect_stack_drift(self):
