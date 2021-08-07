@@ -1026,10 +1026,9 @@ class TestStackActions(object):
             {
                 "Error": {
                     "Code": "ValidationError",
-                    "Message": "\
-An error occurred (ValidationError) \
-when calling the GetTemplate operation: \
-Stack with id foo does not exist"
+                    "Message": "An error occurred (ValidationError) "
+                               "when calling the GetTemplate operation: "
+                               "Stack with id foo does not exist"
                 }
             },
             sentinel.operation
@@ -1055,7 +1054,7 @@ Stack with id foo does not exist"
         self.template._body = '---\nfoo: bar'
 
         response = self.actions.diff()
-        assert response == [sentinel.external_name, ""]
+        assert response == (sentinel.external_name, "")
 
     @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
     def test_diff_some_diffs(
@@ -1072,7 +1071,7 @@ Stack with id foo does not exist"
  ---
  foo: bar
 +baz: qux"""
-        assert response == [sentinel.external_name, expected_diff]
+        assert response == (sentinel.external_name, expected_diff)
 
     @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
     def test_diff_some_diffs_dictdiffer(
@@ -1084,7 +1083,7 @@ Stack with id foo does not exist"
         response = self.actions.diff("dictdiffer")
 
         expected_diff = "[('add', '', [('baz', 'qux')])]"
-        assert response == [sentinel.external_name, expected_diff]
+        assert response == (sentinel.external_name, expected_diff)
 
     @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
     def test_diff_stack_does_not_exist(
