@@ -1150,7 +1150,7 @@ Stack with id foo does not exist"
         }
 
         mock_describe_stack_resource_drifts.return_value = expected_drifts
-        expected_response = [sentinel.external_name, expected_drifts]
+        expected_response = (sentinel.external_name, expected_drifts)
 
         response = self.actions.detect_stack_drift()
 
