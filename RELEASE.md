@@ -2,6 +2,10 @@
 
 This documents how to release the Fox fork of Sceptre.
 
+## Bump version
+
+Raise a PR against develop that bumps the version. For example, see [this](https://github.com/fsa-streamotion/sceptre/pull/24) PR.
+
 ## make dist
 
 Run `make dist`. A `whl` file and a `.tar.gz` file is created inside `./dist`.
