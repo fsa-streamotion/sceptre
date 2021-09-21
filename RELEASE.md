@@ -1,0 +1,22 @@
+# How to release
+
+This documents how to release the Fox fork of Sceptre.
+
+## make dist
+
+Run `make dist`. A `whl` file and a `.tar.gz` file is created inside `./dist`.
+
+## Create GitHub release
+
+- Go to https://github.com/fsa-streamotion/sceptre
+
+- On the right-hand side, click [Releases](https://github.com/fsa-streamotion/sceptre/releases).
+
+- Click *Draft a new release*
+
+    * In *Choose a tag* write a new tag like `v2.10.0`.
+    * In *Release title* also write the tag like `v2.10.0`.
+    * Drag and drop the `whl` and `.tar.gz` to the screen where indicated.
+    * Click *Publish release*.
+
+That's it. The new release should now be available to install.
