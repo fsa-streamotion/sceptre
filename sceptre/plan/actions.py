@@ -627,7 +627,6 @@ class StackActions(object):
 
         return [self.stack.external_name, response]
 
-    @add_stack_hooks
     def detect_stack_drift(self):
         """
         Detects stack drift for a running stack.
