@@ -24,3 +24,7 @@ Run `make dist`. A `whl` file and a `.tar.gz` file is created inside `./dist`.
     * Click *Publish release*.
 
 That's it. The new release should now be available to install.
+
+## See also
+
+The upstream release workflow is documented in the the `Release Workflow` section [here](https://github.com/fsa-streamotion/sceptre/blob/02f6021589cd486868cf52bf9818e3afbd265fe6/.circleci/README.md#release-workflow).
