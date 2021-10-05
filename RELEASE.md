@@ -6,6 +6,14 @@ This documents how to release the Fox fork of Sceptre.
 
 Raise a PR against develop that bumps the version. For example, see [this](https://github.com/fsa-streamotion/sceptre/pull/24) PR.
 
+Note that this step can be automated using the `bumpversion` tool, which will be already installed in the virtualenv. For example:
+
+```text
+▶ bumpversion --new-version 2.11.0 minor
+```
+
+This will update the version strings in the source code and commit.
+
 ## make dist
 
 Run `make dist`. A `whl` file and a `.tar.gz` file is created inside `./dist`.
