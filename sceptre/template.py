@@ -7,7 +7,6 @@ This module implements a Template class, which stores a CloudFormation template
 and implements methods for uploading it to S3.
 """
 
-import imp
 import logging
 import os
 import sys
@@ -15,12 +14,14 @@ import threading
 import traceback
 
 import botocore
+from importlib.machinery import SourceFileLoader
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from jinja2 import StrictUndefined
 from jinja2 import select_autoescape
 from sceptre.exceptions import UnsupportedTemplateFileTypeError
 from sceptre.exceptions import TemplateSceptreHandlerError
+from sceptre.config import strategies
 
 
 class Template(object):
@@ -37,6 +38,9 @@ class Template(object):
             a handler function in an external Python script.
     :type sceptre_user_data: dict
 
+    :param stack_group_config: The StackGroup config for the Stack.
+    :type stack_group_config: dict
+
     :param connection_manager:
     :type connection_manager: sceptre.connection_manager.ConnectionManager
 
@@ -47,12 +51,13 @@ class Template(object):
     _boto_s3_lock = threading.Lock()
 
     def __init__(
-        self, path, sceptre_user_data, connection_manager=None, s3_details=None
+        self, path, sceptre_user_data, stack_group_config, connection_manager=None, s3_details=None
     ):
         self.logger = logging.getLogger(__name__)
 
         self.path = path
         self.sceptre_user_data = sceptre_user_data
+        self.stack_group_config = stack_group_config
         self.connection_manager = connection_manager
         self.s3_details = s3_details
 
@@ -169,7 +174,7 @@ class Template(object):
         if not os.path.isfile(self.path):
             raise IOError("No such file or directory: '%s'", self.path)
 
-        module = imp.load_source(self.name, self.path)
+        module = SourceFileLoader(self.name, self.path).load_module()
 
         try:
             body = module.sceptre_handler(self.sceptre_user_data)
@@ -324,8 +329,7 @@ class Template(object):
     def _domain_from_region(region):
         return "com.cn" if region.startswith("cn-") else "com"
 
-    @staticmethod
-    def _render_jinja_template(template_dir, filename, jinja_vars):
+    def _render_jinja_template(self, template_dir, filename, jinja_vars):
         """
         Renders a jinja template.
 
@@ -343,14 +347,18 @@ class Template(object):
         """
         logger = logging.getLogger(__name__)
         logger.debug("%s Rendering CloudFormation template", filename)
-        env = Environment(
-            autoescape=select_autoescape(
-                disabled_extensions=('j2',),
-                default=True,
-            ),
-            loader=FileSystemLoader(template_dir),
-            undefined=StrictUndefined
-        )
-        template = env.get_template(filename)
+        default_j2_environment_config = {
+                "autoescape": select_autoescape(
+                    disabled_extensions=('j2',),
+                    default=True,
+                ),
+                "loader": FileSystemLoader(template_dir),
+                "undefined": StrictUndefined,
+            }
+        j2_environment_config = strategies.dict_merge(
+            default_j2_environment_config,
+            self.stack_group_config.get("j2_environment", {}))
+        j2_environment = Environment(**j2_environment_config)
+        template = j2_environment.get_template(filename)
         body = template.render(**jinja_vars)
         return body
