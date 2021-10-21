@@ -24,11 +24,12 @@ def get_version(rel_path):
 install_requirements = [
     "boto3>=1.3,<2.0",
     "click>=7.0,<9.0",
+    "dictdiffer>=0.8.1,<1.0"
     "PyYaml>=5.1,<6.0",
     "Jinja2>=2.8,<3",
     "jsonschema>=3.2,<3.3",
     "colorama>=0.3.9",
-    "packaging>=16.8,<17.0",
+    "packaging>=16.8,<=21",
     "sceptre-cmd-resolver>=1.1.3,<2",
     "sceptre-file-resolver>=1.0.4,<2",
     "six>=1.11.0,<2.0.0",
@@ -36,7 +37,7 @@ install_requirements = [
 ]
 
 extra_requirements = {
-    "troposphere": ["troposphere>=2.7,<3"],
+    "troposphere": ["troposphere>=2.0.0,<2.1.0"],
 }
 
 

@@ -219,19 +219,22 @@ Options:
   --help                     Show this message and exit.
 
 Commands:
-  create         Creates a stack or a change set.
-  delete         Deletes a stack or a change set.
-  describe       Commands for describing attributes of stacks.
-  estimate-cost  Estimates the cost of the template.
-  execute        Executes a Change Set.
-  generate       Prints the template.
-  launch         Launch a Stack or StackGroup.
-  list           Commands for listing attributes of stacks.
-  new            Commands for initialising Sceptre projects.
-  set-policy     Sets Stack policy.
-  status         Print status of stack or stack_group.
-  update         Update a stack.
-  validate       Validates the template.
+  create                 Creates a stack or a change set.
+  delete                 Deletes a stack or a change set.
+  describe               Commands for describing attributes of stacks.
+  diff                   Show diffs with running stack.
+  estimate-cost          Estimates the cost of the template.
+  execute                Executes a Change Set.
+  fetch-remote-template  Prints the remote template.
+  generate               Prints the template.
+  launch                 Launch a Stack or StackGroup.
+  list                   Commands for listing attributes of stacks.
+  new                    Commands for initialising Sceptre projects.
+  set-policy             Sets Stack policy.
+  stack-name             Reveal the stack name or names.
+  status                 Print status of stack or stack_group.
+  update                 Update a stack.
+  validate               Validates the template.
 ```
 
 ## Python

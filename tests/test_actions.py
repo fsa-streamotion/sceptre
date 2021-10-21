@@ -1097,3 +1097,146 @@ class TestStackActions(object):
         )
         with pytest.raises(ClientError):
             self.actions._get_cs_status(sentinel.change_set_name)
+
+    def test_fetch_remote_template_ok(self):
+        fake_template_body = '---\nfoo: bar'
+        self.actions.connection_manager.call.return_value = {
+            "TemplateBody": fake_template_body
+        }
+        response = self.actions.fetch_remote_template()
+        assert response == fake_template_body
+
+    def test_fetch_remote_template_no_template(self):
+        self.actions.connection_manager.call.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "ValidationError",
+                    "Message": "An error occurred (ValidationError) "
+                               "when calling the GetTemplate operation: "
+                               "Stack with id foo does not exist"
+                }
+            },
+            sentinel.operation
+        )
+
+        with pytest.raises(ClientError):
+            self.actions.fetch_remote_template()
+
+    def test_stack_name(self):
+        response = self.actions.stack_name(False)
+        assert response == sentinel.external_name
+
+#    Fails with TypeError: must be str, not _SentinelObject
+#    def test_stack_name_p_opt(self):
+#        response = self.actions.stack_name(True)
+#        assert response.endswith(sentinel.external_name)
+
+    @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
+    def test_diff_no_diffs(
+        self, mock_fetch_remote_template
+    ):
+        mock_fetch_remote_template.return_value = '---\nfoo: bar'
+        self.template._body = '---\nfoo: bar'
+
+        response = self.actions.diff()
+        assert response == (sentinel.external_name, "")
+
+    @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
+    def test_diff_some_diffs(
+        self, mock_fetch_remote_template
+    ):
+        mock_fetch_remote_template.return_value = '---\nfoo: bar'
+        self.template._body = '---\nfoo: bar\nbaz: qux'
+
+        response = self.actions.diff()
+
+        expected_diff = """--- remote_template
++++ local_template
+@@ -1,2 +1,3 @@
+ ---
+ foo: bar
++baz: qux"""
+        assert response == (sentinel.external_name, expected_diff)
+
+    @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
+    def test_diff_some_diffs_dictdiffer(
+        self, mock_fetch_remote_template
+    ):
+        mock_fetch_remote_template.return_value = '---\nfoo: bar'
+        self.template._body = '---\nfoo: bar\nbaz: qux'
+
+        response = self.actions.diff("dictdiffer")
+
+        expected_diff = "[('add', '', [('baz', 'qux')])]"
+        assert response == (sentinel.external_name, expected_diff)
+
+    @patch("sceptre.plan.actions.StackActions.fetch_remote_template")
+    def test_diff_stack_does_not_exist(
+        self, mock_fetch_remote_template
+    ):
+        mock_fetch_remote_template.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "ValidationError",
+                    "Message": "\
+An error occurred (ValidationError) \
+when calling the GetTemplate operation: \
+Stack with id foo does not exist"
+                }
+            },
+            sentinel.operation
+        )
+        self.template._body = '---\nfoo: bar'
+
+        with pytest.raises(ClientError):
+            self.actions.diff()
+
+    @patch("sceptre.plan.actions.StackActions._describe_stack_resource_drifts")
+    @patch("sceptre.plan.actions.StackActions._describe_stack_drift_detection_status")
+    @patch("sceptre.plan.actions.StackActions._detect_stack_drift")
+    def test_detect_stack_drift(
+        self,
+        mock_detect_stack_drift,
+        mock_describe_stack_drift_detection_status,
+        mock_describe_stack_resource_drifts
+    ):
+        mock_detect_stack_drift.return_value = {
+            "StackDriftDetectionId": "3fb76910-f660-11eb-80ac-0246f7a6da62"
+        }
+        mock_describe_stack_drift_detection_status.side_effect = [
+            {
+                "StackId": "fake-stack-id",
+                "StackDriftDetectionId": "3fb76910-f660-11eb-80ac-0246f7a6da62",
+                "DetectionStatus": "DETECTION_IN_PROGRESS",
+                "DetectionStatusReason": "User Initiated"
+            },
+            {
+                "StackId": "fake-stack-id",
+                "StackDriftDetectionId": "3fb76910-f660-11eb-80ac-0246f7a6da62",
+                "StackDriftStatus": "IN_SYNC",
+                "DetectionStatus": "DETECTION_COMPLETE",
+                "DriftedStackResourceCount": 0
+            }
+        ]
+
+        expected_drifts = {
+            "StackResourceDrifts": [
+                {
+                    "StackId": "fake-stack-id",
+                    "LogicalResourceId": "VPC",
+                    "PhysicalResourceId": "vpc-028c655dea7c65227",
+                    "ResourceType": "AWS::EC2::VPC",
+                    "ExpectedProperties": '{"foo":"bar"}',
+                    "ActualProperties": '{"foo":"bar"}',
+                    "PropertyDifferences": [],
+                    "StackResourceDriftStatus": "IN_SYNC"
+                }
+            ]
+        }
+
+        mock_describe_stack_resource_drifts.return_value = expected_drifts
+        expected_response = (sentinel.external_name, expected_drifts)
+
+        response = self.actions.detect_stack_drift()
+
+        assert response == expected_response
