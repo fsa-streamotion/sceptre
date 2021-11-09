@@ -6,6 +6,7 @@ sceptre.plan.plan_custom
 Custom code that is inherited in SceptrePlan.
 """
 
+
 class SceptrePlanCustom():
 
     def stack_name(self, *args):

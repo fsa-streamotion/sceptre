@@ -1,5 +1,4 @@
 import click
-import webbrowser
 import json
 
 from sceptre.context import SceptreContext

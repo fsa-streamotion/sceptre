@@ -1,24 +1,10 @@
-import logging
-import yaml
-import datetime
-import os
-import errno
-import json
-
 from click.testing import CliRunner
-from mock import MagicMock, patch, sentinel
-import pytest
-import click
+from mock import MagicMock, patch
 
 from sceptre.cli import cli
 from sceptre.config.reader import ConfigReader
 from sceptre.stack import Stack
 from sceptre.plan.actions import StackActions
-from sceptre.stack_status import StackStatus
-from sceptre.cli.helpers import setup_logging, write, ColouredFormatter
-from sceptre.cli.helpers import CustomJsonEncoder, catch_exceptions
-from botocore.exceptions import ClientError
-from sceptre.exceptions import SceptreException
 
 
 class TestCliCustom(object):

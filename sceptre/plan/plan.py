@@ -15,6 +15,7 @@ from sceptre.plan.executor import SceptrePlanExecutor
 from sceptre.helpers import sceptreise_path
 from sceptre.plan.plan_custom import SceptrePlanCustom
 
+
 class SceptrePlan(SceptrePlanCustom):
 
     def __init__(self, context):
