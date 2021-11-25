@@ -2,6 +2,12 @@
 
 set -o errexit
 
+usage() {
+  echo "Usage: $0 VERSION"
+  echo "e.g. $0 2.10.0"
+  exit 1
+}
+
 get_opts() {
   [ -z "$1" ] && usage
   version="$1"
