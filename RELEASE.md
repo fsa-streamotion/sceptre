@@ -11,10 +11,11 @@ To raise a PR to merge upstream master into develop:
 
 ## Bump version
 
-Run the `bump_verion.sh` script, e.g.
+Run the `bump_verion.sh` script, for example:
 
 ```text
 ▶ bash bump_verion.sh 2.10.0
+▶ bash bump_verion.sh 3.0.0 major
 ```
 
 ## make dist
