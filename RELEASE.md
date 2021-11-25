@@ -14,7 +14,7 @@ To raise a PR to merge upstream master into develop:
 Run the `bump_verion.sh` script, e.g.
 
 ```text
-bash bump_verion.sh 2.10.0
+▶ bash bump_verion.sh 2.10.0
 ```
 
 ## make dist
