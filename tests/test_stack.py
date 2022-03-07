@@ -3,7 +3,7 @@
 import importlib
 
 import pytest
-from mock import MagicMock, sentinel
+from unittest.mock import MagicMock, sentinel
 
 from sceptre.exceptions import InvalidConfigFileError
 from sceptre.resolvers import Resolver
@@ -161,16 +161,52 @@ class TestStack(object):
 
     def test_repr_can_eval_correctly(self):
         sceptre = importlib.import_module('sceptre')
-        mock = importlib.import_module('mock')
         evaluated_stack = eval(
             repr(self.stack),
             {
                 'sceptre': sceptre,
-                'sentinel': mock.mock.sentinel
+                'sentinel': sentinel
             }
         )
         assert isinstance(evaluated_stack, Stack)
         assert evaluated_stack.__eq__(self.stack)
+
+    def test_configuration_manager__iam_role_raises_recursive_resolve__returns_connection_manager_with_no_role(self):
+        class FakeResolver(Resolver):
+            def resolve(self):
+                return self.stack.iam_role
+
+        self.stack.iam_role = FakeResolver()
+
+        connection_manager = self.stack.connection_manager
+        assert connection_manager.iam_role is None
+
+    def test_configuration_manager__iam_role_returns_value_second_access__returns_value_on_second_access(self):
+
+        class FakeResolver(Resolver):
+            access_count = 0
+
+            def resolve(self):
+                if self.access_count == 0:
+                    self.access_count += 1
+                    return self.stack.iam_role
+                else:
+                    return 'role'
+
+        self.stack.iam_role = FakeResolver()
+
+        assert self.stack.connection_manager.iam_role is None
+        assert self.stack.connection_manager.iam_role == 'role'
+
+    def test_configuration_manager__iam_role_returns_value__returns_connection_manager_with_that_role(self):
+        class FakeResolver(Resolver):
+            def resolve(self):
+                return 'role'
+
+        self.stack.iam_role = FakeResolver()
+
+        connection_manager = self.stack.connection_manager
+        assert connection_manager.iam_role == 'role'
 
 
 class TestStackSceptreUserData(object):
@@ -206,7 +242,7 @@ class TestStackSceptreUserData(object):
                 return self.stack.sceptre_user_data['primitive']
 
         stack = stack_factory()
-        stack._sceptre_user_data = {
+        stack.sceptre_user_data = {
             'primitive': sentinel.primitive_value,
             'resolved': TestResolver(stack=stack),
         }

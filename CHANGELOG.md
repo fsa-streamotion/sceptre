@@ -4,6 +4,48 @@ Categories: Added, Removed, Changed, Fixed, Nonfunctional, Deprecated
 
 ## Unreleased
 
+## 3.0.0 (2022.02.22)
+
+### Breaking Changes
+ - Python 3.6 support has been removed due to that version reaching end-of-life status
+ - Jinja2 has been upgraded to v3.0
+
+### Added
+ - [Resolve #1114,#426] Resolvable stack_tags (#1184)
+ - [Resolve #1114,#886,#491] Resolvable role_arn and template_bucket_name (#1153)
+ - [Resolve #1114] Resolvable iam_role (#1188)
+ - [Resolve #1114] Resolvable Template Handler configs and the !stack_attr resolver
+ - [Resolve #1167] Add list stacks command (#1168)
+ - [Resolve #1169] Add drift detect and drift show commands (#1170)
+
+### Removed
+ - [Resolves #1201] Remove Py3.6 support (#1206)
+
+### Changed
+ - [Resolve #1114,#1000] Placeholders for non-deployed stacks in non-deployment commands (#1185)
+
+### Fixed
+ - [Resolves #1201] Fix dependency conflicts (Jinja2, moto) (#1206)
+
+### Nonfunctional
+- [Resolves #1194] Docs: "know"->"knows" (#1195)
+- docs: fix template path in getting-started (#1198)
+- Fix spelling of stack_group_config (#1199)
+
+## 2.7.1 (2021.12.06)
+
+### Fixed
+
+- [Resolve #1175] Adding commas for cfn-flip dependency (#1176)
+- [Partially resolves #1174] Fixing Docs deployment by pinning Sphinx to lesser version (#1171)
+
+### Nonfunctional
+
+- Fix typo in CDK doc (#1181)
+- Add release instructions (#1162)
+- Resolve #1163 update doc link to new domain (#1166)
+- Pointing SAM docs toward the sceptre-sam-handler (#1164)
+
 ## 2.7.0 (2021.11.18)
 
 ### Added
