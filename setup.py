@@ -24,10 +24,10 @@ def get_version(rel_path):
 install_requirements = [
     "boto3>=1.3,<2.0",
     "click>=7.0,<9.0",
-    "cfn-flip>=1.2.3<2.0",
+    "cfn-flip>=1.2.3,<2.0",
     "deepdiff>=5.5.0,<6.0",
     "PyYaml>=5.1,<6.0",
-    "Jinja2>=2.8,<3",
+    "Jinja2>=3.0,<4",
     "jsonschema>=3.2,<3.3",
     "colorama>=0.3.9",
     "packaging>=16.8,<=21",
@@ -72,7 +72,9 @@ setup(
             "file_contents = sceptre.resolvers.file_contents:FileContents",
             "stack_output = sceptre.resolvers.stack_output:StackOutput",
             "stack_output_external ="
-            "sceptre.resolvers.stack_output:StackOutputExternal"
+            "sceptre.resolvers.stack_output:StackOutputExternal",
+            "no_value = sceptre.resolvers.no_value:NoValue",
+            "stack_attr = sceptre.resolvers.stack_attr:StackAttr"
         ],
         "sceptre.template_handlers": [
             "file = sceptre.template_handlers.file:File",
@@ -94,7 +96,6 @@ setup(
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "Environment :: Console",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
