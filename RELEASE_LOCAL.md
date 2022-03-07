@@ -11,15 +11,12 @@ To raise a PR to merge upstream master into develop:
 
 ## Bump version
 
-Raise a PR against develop that bumps the version. For example, see [this](https://github.com/fsa-streamotion/sceptre/pull/24) PR.
-
-Note that this step can be automated using the `bumpversion` tool, which will be already installed in the virtualenv. For example:
+Run the `bump_verion.sh` script, for example:
 
 ```text
-▶ bumpversion --new-version 2.11.0 minor
+▶ bash bump_verion.sh 2.10.0
+▶ bash bump_verion.sh 3.0.0 major
 ```
-
-This will update the version strings in the source code and commit.
 
 ## make dist
 
